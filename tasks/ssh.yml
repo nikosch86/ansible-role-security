@@ -7,34 +7,34 @@
 - name: Update SSH configuration to be more secure.
   lineinfile:
     dest: "{{ security_ssh_config_path }}"
-    regexp: "{{ item.regexp }}"
-    line: "{{ item.line }}"
+    regexp: '^(?:#\s*)?{{ item.key }}\s'
+    line: "{{ item.key }} {{ item.value }}"
     state: present
     validate: 'sshd -T -f %s'
     mode: 0644
   with_items:
-    - regexp: "^PasswordAuthentication"
-      line: "PasswordAuthentication {{ security_ssh_password_authentication }}"
-    - regexp: "^PermitRootLogin"
-      line: "PermitRootLogin {{ security_ssh_permit_root_login }}"
-    - regexp: "^Port"
-      line: "Port {{ security_ssh_port }}"
-    - regexp: "^UseDNS"
-      line: "UseDNS {{ security_ssh_usedns }}"
-    - regexp: "^PermitEmptyPasswords"
-      line: "PermitEmptyPasswords {{ security_ssh_permit_empty_password }}"
-    - regexp: "^ChallengeResponseAuthentication"
-      line: "ChallengeResponseAuthentication {{ security_ssh_challenge_response_auth }}"
-    - regexp: "^GSSAPIAuthentication"
-      line: "GSSAPIAuthentication {{ security_ssh_gss_api_authentication }}"
-    - regexp: "^X11Forwarding"
-      line: "X11Forwarding {{ security_ssh_x11_forwarding }}"
+    - key: PubkeyAuthentication
+      value: "{{ security_ssh_password_authentication }}"
+    - key: PermitRootLogin
+      value: "{{ security_ssh_permit_root_login }}"
+    - key: Port
+      value: "{{ security_ssh_port }}"
+    - key: UseDNS
+      value: "{{ security_ssh_usedns }}"
+    - key: PermitEmptyPasswords
+      value: "{{ security_ssh_permit_empty_password }}"
+    - key: ChallengeResponseAuthentication
+      value: "{{ security_ssh_challenge_response_auth }}"
+    - key: GSSAPIAuthentication
+      value: "{{ security_ssh_gss_api_authentication }}"
+    - key: X11Forwarding
+      value: "{{ security_ssh_x11_forwarding }}"
   notify: restart ssh
 
 - name: Add configured users allowed to connect over ssh
   lineinfile:
     dest: "{{ security_ssh_config_path }}"
-    regexp: '^AllowUsers'
+    regexp: '^(?:#\s*)?AllowUsers\s'
     line: "AllowUsers {{ security_ssh_allowed_users | join(' ') }}"
     state: present
     create: true
@@ -46,7 +46,7 @@
 - name: Add configured groups allowed to connect over ssh
   lineinfile:
     dest: "{{ security_ssh_config_path }}"
-    regexp: '^AllowGroups'
+    regexp: '^(?:#\s*)?AllowGroups\s'
     line: "AllowGroups {{ security_ssh_allowed_groups | join(' ') }}"
     state: present
     create: true
