@@ -13,7 +13,7 @@
     validate: 'sshd -T -f %s'
     mode: 0644
   with_items:
-    - key: PubkeyAuthentication
+    - key: PasswordAuthentication
       value: "{{ security_ssh_password_authentication }}"
     - key: PermitRootLogin
       value: "{{ security_ssh_permit_root_login }}"
